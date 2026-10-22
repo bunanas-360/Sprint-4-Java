@@ -1,0 +1,673 @@
+{
+  "info": {
+    "name": "MOTIVA API - Sprint 4",
+    "description": "Coleção de CRUD completo e relatórios REST. Execute as requisições na ordem apresentada em um ambiente de teste; requisições POST salvam os IDs retornados em variáveis da coleção. Configure baseUrl e use banco de teste/schema autorizado.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "trechoId",
+      "value": ""
+    },
+    {
+      "key": "equipeId",
+      "value": ""
+    },
+    {
+      "key": "intervencaoId",
+      "value": ""
+    },
+    {
+      "key": "relatorioId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Trechos",
+      "item": [
+        {
+          "name": "01 - Listar trechos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/trechos"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Criar trecho",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/trechos",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"km\": 10,\n  \"crescimentoVegetacao\": 85,\n  \"tipoTrecho\": \"umido\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('trechoId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Buscar trecho criado",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/trechos/{{trechoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Filtrar vegetação >= 50",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/trechos/vegetacao?minimo=50"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Atualizar trecho",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/trechos/{{trechoId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"km\": 10,\n  \"crescimentoVegetacao\": 40,\n  \"tipoTrecho\": \"umido\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 - Excluir trecho",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/trechos/{{trechoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 204', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 - Confirmar 404 para trecho excluído",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/trechos/{{trechoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 - Rejeitar crescimento negativo",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/trechos",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"km\": 11,\n  \"crescimentoVegetacao\": -1,\n  \"tipoTrecho\": \"seco\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Equipes",
+      "item": [
+        {
+          "name": "01 - Listar equipes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/equipes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Criar equipe",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/equipes",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomeEquipe\": \"Equipe de Teste Postman\",\n  \"responsavel\": \"Responsável de Teste\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('equipeId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Buscar equipe criada",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/equipes/{{equipeId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Filtrar equipe por nome",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/equipes?nome=Teste"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Atualizar equipe",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/equipes/{{equipeId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomeEquipe\": \"Equipe Atualizada\",\n  \"responsavel\": \"Responsável de Teste\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 - Excluir equipe",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/equipes/{{equipeId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 204', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 - Confirmar 404 para equipe excluída",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/equipes/{{equipeId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Intervenções",
+      "item": [
+        {
+          "name": "01 - Listar intervenções",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/intervencoes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Criar intervenção",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/intervencoes",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Roçada Mecanizada\",\n  \"descricao\": \"Roçada em trecho crítico\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('intervencaoId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Buscar intervenção criada",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/intervencoes/{{intervencaoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Filtrar intervenção por tipo",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/intervencoes?tipo=Roçada"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Atualizar intervenção",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/intervencoes/{{intervencaoId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Pulverização\",\n  \"descricao\": \"Controle de vegetação\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 - Excluir intervenção",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/intervencoes/{{intervencaoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 204', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 - Confirmar 404 para intervenção excluída",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/intervencoes/{{intervencaoId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Relatórios",
+      "item": [
+        {
+          "name": "01 - Gerar e persistir relatório",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/relatorios"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('relatorioId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Listar histórico",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/relatorios"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Buscar relatório criado",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/relatorios/{{relatorioId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Consultar histórico por período",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/relatorios/periodo?inicio=2020-01-01T00%3A00%3A00&fim=2099-12-31T23%3A59%3A59"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Rejeitar período inválido",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/relatorios/periodo?inicio=2026-10-22T12%3A00%3A00&fim=2026-10-21T12%3A00%3A00"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status HTTP 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
