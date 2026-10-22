@@ -1,0 +1,13 @@
+package br.com.motiva.repository;
+
+import br.com.motiva.model.RelatorioPrioridade;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public interface RelatorioPrioridadeRepository extends JpaRepository<RelatorioPrioridade, Long> {
+    List<RelatorioPrioridade> findAllByOrderByDataGeracaoDesc();
+    List<RelatorioPrioridade> findByDataGeracaoBetweenOrderByDataGeracaoDesc(
+            LocalDateTime inicio, LocalDateTime fim);
+}
